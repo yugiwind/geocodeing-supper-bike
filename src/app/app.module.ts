@@ -16,19 +16,14 @@ import { DirectionsMapDirective } from './service/googlr-map.directive';
 
 //component layout
 import { AppComponent } from './app.component';
-import { LoginComponent } from './pages/login/login.component';
 import { HeaderComponent } from '../layouts/header/header.component';
 import { FooterComponent } from '../layouts/footer/footer.component';
 import { MenuBarComponent } from '../layouts/menu-bar/menu-bar.component';
 
 //component xử lý
-import { RegisterComponent } from './pages/register/register.component';
-import { MapRoomLocationComponent } from './pages/map-room-location/map-room-location.component';
-import { AdvanceSearchComponent } from './pages/advance-search/advance-search.component';
-import { BasicSearchComponent } from './pages/basic-search/basic-search.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { LoginComponent } from './pages/login/login.component';
 import { MapsNearRoomsComponent } from './pages/maps-near-rooms/maps-near-rooms.component';
-import { RoomDetailsComponent } from './pages/room-details/room-details.component';
 import { AddNewPostComponent } from './pages/add-new-post/add-new-post.component';
 import { MyProfileComponent } from './pages/my-profile/my-profile.component';
 
@@ -43,13 +38,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     FooterComponent,
     MenuBarComponent,
     LoginComponent,
-    RegisterComponent,
-    MapRoomLocationComponent,
-    AdvanceSearchComponent,
-    BasicSearchComponent,
     ProfileComponent,
     MapsNearRoomsComponent,
-    RoomDetailsComponent,
     AddNewPostComponent,
     DirectionsMapDirective,
     MyProfileComponent 
@@ -57,7 +47,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   imports: [
     BrowserModule,
     HttpClientModule,
-    AgmCoreModule.forRoot({apiKey: "AIzaSyC6kqYWKv0TZyjLWZGY498aif2LD9eDB1c",libraries: ["places"]}),
+    AgmCoreModule.forRoot({apiKey: "AIzaSyAT1hOjHqsULEqWIHIkVogCjYasmMDv7sk",libraries: ["places"]}),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
