@@ -1,10 +1,10 @@
 import { Component, OnInit,ApplicationRef } from '@angular/core';
+import {ToastyService, ToastyConfig, ToastOptions, ToastData} from 'ng2-toasty';
 
 import { user_types } from '../../models/user_types';
 import { users } from '../../models/users';
 import { userService } from '../../service/user.service';
 import { Authentication } from '../../config/authentication';
-import { HttpMethods } from '../../config/http-method-custom'
 
 @Component({
   selector: 'app-login',

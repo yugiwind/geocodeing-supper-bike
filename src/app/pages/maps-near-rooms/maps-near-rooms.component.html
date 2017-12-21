@@ -1,46 +1,87 @@
-<div class="main">
-  <!-- <h1>Angular 2 Google Map Direction Display</h1> -->
-  <div class="form-group container">
-    <!-- <input placeholder="Enter source location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control" #pickupInput [formControl]="destinationInput"> -->
-      <div class="col-md-10" style="padding:0px">
-        <div [hidden]="submitted">
-          <form (ngSubmit)="onSubmit()" #locForm="ngForm">
-            <div class="col-md-12" style="padding:0px">
-              <div class="input-group">
-                <span class="input-group-addon">
-                  <i class="fa fa-map-marker" aria-hidden="true"></i>
-                </span>
-                <div class="form-group">
-                  <input placeholder="Enter destination" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control col"
-                  #pickupOutput [formControl]="destinationOutput">
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
+<ng2-toasty [position]="'top-right'"></ng2-toasty>
+<div *ngIf="selectedpoint" class="selectedClass nav">
+  <div class="modal-content" [ngClass]="{'backgroud-white': selectedpoint.status==0,'backgroud-read': selectedpoint.status==1,'backgroud-blue':selectedpoint.status==2}">
+    <div class="modal-header">
+      <h4 class="modal-title text-center">Selected Item</h4>
+    </div>
+    <div>
+      <div *ngIf="selectedpoint.vip==1" class="vip">
+        <img src="../../../assets/icon/vip.png">
       </div>
-      <div class="col-md-2" style="padding:0px">
+      <table class="table">
+        <tr *ngIf="selectedpoint.title">
+          <th>Name:</th>
+          <th>{{selectedpoint.title}}</th>
+        </tr>
+        <tr>
+          <th>Address:</th>
+          <th>{{selectedpoint.address}}</th>
+        </tr>
+        <tr>
+          <th>Location:</th>
+          <th>({{selectedpoint.latitude}}:{{selectedpoint.longitude}})</th>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <button type="button" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-secondary" (click)="closeSelect()">Close</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+<div class="main">
+  <div class="col-md-2 no-padding ">
+    <table>
+      <tr>
+        <th class="backgroud-read text-center">Đã có xe nhận</th>
+        <th class="backgroud-blue text-center">Chưa có xe nhận</th>
+        <th class="backgroud-white text-center">Chưa xác định toạ độ</th>
+      </tr>
+    </table>
+    <div class=" scrollable">
+      <div class="table-bordered">
+      </div>
+      <div *ngFor="let point of points" (click)="selectpoint(point)">
+        <a class="list-group-item list-group-item-action flex-column align-items-start backgroud-hover hover-point" [ngClass]="{'backgroud-white': point.status==0,'backgroud-read': point.status==1,'backgroud-blue':point.status==2,'active': selectedpoint && selectedpoint.id == point.id}">
+          <div *ngIf="point.vip==1" class="vip">
+            <img src="../../../assets/icon/vip.png">
+          </div>
+          <div class="d-flex w-100 justify-content-between">
+            <h4 class="mb-1">{{point.address}}</h4>
+            <small>3 minutes ago</small>
+          </div>
+          <p class="mb-1">{{point.title}}</p>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-10 no-padding container">
+    <div [hidden]="submitted">
+      <form (ngSubmit)="onSubmit()" #locForm="ngForm">
         <div class="input-group">
           <span class="input-group-addon">
-            <i class="fa fa-street-view" aria-hidden="true"></i>
+            <i class="fa fa-map-marker" aria-hidden="true"></i>
           </span>
-          <button (click)="mylocation()" class="form-control">Vị trí của tôi</button>
-        </div>
-      </div>
-  </div>
-  <sebm-google-map [latitude]="latitude" [longitude]="longitude" [scrollwheel]="false" [zoom]="zoom">
-    <sebm-google-map-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" [iconUrl]="'../../../assets/person-1.png'" (dragEnd)="markerDragEnd($event)"></sebm-google-map-marker>
-    <sebm-google-map-marker *ngFor="let p of Posts" [latitude]="p.latitude" [longitude]="p.longitude" [iconUrl]="'../../../assets/home.png'" 
-    (markerClick)="loadDirect(p.latitude,p.longitude)">
-      <sebm-google-map-info-window [disableAutoPan]="false" #infoWindow style="max-width:50px;">
-          <div class="caption" >
-            <h3>{{p.title}}</h3>
-            Giá:<strong>{{p.price| number}} VNĐ/tháng</strong>-
-            Khoảng cách:<strong>{{vc.estimatedDistance}}</strong><br/>
-            <button  type="button" class="btn-none-border pull-right" data-toggle="modal" data-target="#DetailModal">Xem chi tiết<i class="fa fa-angle-double-right" aria-hidden="true"></i></button>
+          <div class="form-group">
+            <input placeholder="Enter destination" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control col"
+              #pickupOutput [formControl]="destinationOutput">
           </div>
-      </sebm-google-map-info-window>
-    </sebm-google-map-marker>
-    <sebm-google-map-directions [origin]="origin" [destination]="destination"></sebm-google-map-directions>
-  </sebm-google-map>
+        </div>
+      </form>
+    </div>
+    <sebm-google-map [latitude]="latitude" [longitude]="longitude" [scrollwheel]="false" [zoom]="zoom">
+      <div *ngIf="selectedpoint">
+        <sebm-google-map-marker [latitude]="selectedpoint.latitude" [longitude]="selectedpoint.longitude" [markerDraggable]="true"
+          [iconUrl]="'../../../assets/icon/speech.png'" (dragEnd)="markerDragEnd($event)"></sebm-google-map-marker>
+      </div>
+      <sebm-google-map-marker *ngFor="let p of cards" [latitude]="p.latitude" [longitude]="p.longitude" [markerDraggable]="true"
+        [iconUrl]="'../../../assets/icon/taxi.png'" (markerClick)="loadDirect(p.latitude,p.longitude)">
+      </sebm-google-map-marker>
+      <sebm-google-map-directions [origin]="origin" [destination]="destination"></sebm-google-map-directions>
+    </sebm-google-map>
+  </div>
 </div>

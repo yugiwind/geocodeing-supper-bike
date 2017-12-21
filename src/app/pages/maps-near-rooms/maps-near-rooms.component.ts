@@ -1,10 +1,19 @@
-import {Component,NgModule,NgZone,OnInit,ViewChild,ElementRef,Directive,Input} from '@angular/core';
+import {Component,NgModule,NgZone,OnInit,ViewChild,ElementRef,Directive,Input,Renderer} from '@angular/core';
 import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
 import {AgmCoreModule, MapsAPILoader, GoogleMapsAPIWrapper} from 'angular2-google-maps/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {} from '@types/googlemaps';
+import {ToastyService, ToastyConfig, ToastOptions, ToastData} from 'ng2-toasty';
+
+// import { Notify } from '../../config/toasty';
+
 import {DirectionsMapDirective} from '../../service/googlr-map.directive';
-import { posts } from '../../models/posts';
+import { pointService } from '../../service/point.service';
+
+import { point } from '../../models/point';
+import { geocode } from '../../models/geocode';
+import { from } from 'rxjs/observable/from';
 
 declare var google : any;
 declare var jQuery : any;
@@ -12,7 +21,7 @@ declare var jQuery : any;
 @Component({selector: 'app-maps-near-rooms',
     templateUrl: './maps-near-rooms.component.html',
     styleUrls: ['./maps-near-rooms.component.css'],
-    providers: [GoogleMapsAPIWrapper]
+    providers: [GoogleMapsAPIWrapper,pointService]
   })
 
 export class MapsNearRoomsComponent implements OnInit {
@@ -21,8 +30,11 @@ export class MapsNearRoomsComponent implements OnInit {
   public destinationInput : FormControl;
   public destinationOutput : FormControl;
   public zoom : number;
-  // public mapCustomStyles : any;
-  private Posts : posts[];
+  private points : point[];
+  private selectedpoint : point;
+  private cards : any;
+  private interval: any;
+  private geoCoder;
 
   @ViewChild("pickupInput")public pickupInputElementRef : ElementRef;
   @ViewChild("pickupOutput")public pickupOutputElementRef : ElementRef;
@@ -33,28 +45,113 @@ export class MapsNearRoomsComponent implements OnInit {
     private gmapsApi : GoogleMapsAPIWrapper, 
     private _elementRef : ElementRef, 
     private route : ActivatedRoute, 
-    private router : Router) {}
+    private router : Router,
+    private pointService: pointService,
+    private toastyService: ToastyService,
+    private toastyConfig: ToastyConfig) {
+      this.toastyConfig.theme = 'material';
+    }
 
   ngOnInit() {
+    this.loadListpoint();
+    this.interval = setInterval(() => {
+      this.loadListpoint();
+      // console.log(this.selectedpoint);
+    }, 5000);
+    this.loadmap();
+  }
+
+  
+
+  private loadListpoint(){
+    this.pointService.getList().subscribe(points=>{ 
+      this.points = points;
+    });
+  }
+
+  loadmap(){
     this.zoom = 4;
     this.latitude = 10.821581049913508;
     this.longitude = 106.78939990781248;
     this.destinationOutput = new FormControl();
     this.setCurrentPosition();
-    this.loadListPost();
     this.mapsAPILoader.load().then(() => {
-        this.loadmap();
+      let autocompleteOutput = new google.maps.places.Autocomplete(this.pickupOutputElementRef.nativeElement, {types: ["address"]});
+      this.setupPlaceChangedListener(autocompleteOutput);
       });
   }
 
-  loadmap(){
-    let autocompleteOutput = new google.maps.places.Autocomplete(this.pickupOutputElementRef.nativeElement, {types: ["address"]});
-    this.setupPlaceChangedListener(autocompleteOutput);
+
+  selectpoint(point:point){
+    this.selectedpoint = point;
+    this.cards = [];
+    if(this.selectedpoint.status == 0){
+      var geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address: this.selectedpoint.address }, (results, status) => {
+        var Geocode  = new geocode();
+        this.latitude = this.selectedpoint.latitude =  results[0].geometry.location.lat();
+        this.longitude = this.selectedpoint.longitude = results[0].geometry.location.lng();
+        this.addToast("success","Tự động xác định toạn độ thành công","("+this.latitude+"+"+this.longitude);
+      });
+      this.vc.clearDirections();
+    }else if(this.selectedpoint.status == 1){
+      this.latitude = this.selectedpoint.latitude;
+      this.longitude = this.selectedpoint.longitude;
+      this.vc.clearDirections();
+    }else if(this.selectedpoint.status == 2){
+      let card = new geocode();
+      card.latitude = 10.921581049913508;
+      card.longitude = 106.78939990781248;
+      this.interval = setInterval(() => {
+        card.latitude = card.latitude - 0.001;
+      }, 1000);
+      this.cards.push(card);
+      this.loadDirect(card);
+    }
   }
 
+  addToast(type:string,title:string,mgs:string) {
+    var toastOptions:ToastOptions = {
+      title: title,
+      msg: mgs,
+      showClose: true,
+      timeout: 5000,
+      theme: "bootstrap",
+        onAdd: (toast:ToastData) => {
+            // console.log('Toast ' + toast.id + ' has been added!');
+        },
+        onRemove: function(toast:ToastData) {
+            // console.log('Toast ' + toast.id + ' has been removed!');
+        }
+    };
+    // Add see all possible types in one shot
+    switch (type) {
+        case 'default': this.toastyService.default(toastOptions); break;
+        case 'info': this.toastyService.info(toastOptions); break;
+        case 'success': this.toastyService.success(toastOptions); break;
+        case 'wait': this.toastyService.wait(toastOptions); break;
+        case 'error': this.toastyService.error(toastOptions); break;
+        case 'warning': this.toastyService.warning(toastOptions); break;
+    }
+  }
+
+  geocoding(address: String):geocode{
+    var geocoder = new google.maps.Geocoder();
+    return geocoder.geocode({ address: address }, (results, status) => {
+      var Geocode  = new geocode();
+      Geocode.latitude =  results[0].geometry.location.lat();
+      Geocode.longitude = results[0].geometry.location.lng();
+      console.log("lat: " + Geocode.latitude + ", long: " + Geocode.longitude);
+      return Geocode;
+    });
+  }
+
+
   markerDragEnd($event: any) {
-    this.latitude = $event.coords.lat;
-    this.longitude = $event.coords.lng;
+    this.latitude = this.selectedpoint.latitude = $event.coords.lat;
+    this.longitude = this.selectedpoint.longitude = $event.coords.lng;
+    this.getAddress();
+    // this.addToast("success","Cập nhật toạn độ thành công","("+this.latitude+"+"+this.longitude);
   }
 
   private setupPlaceChangedListener(autocomplete : any) {
@@ -66,23 +163,14 @@ export class MapsNearRoomsComponent implements OnInit {
           }
           this.latitude = place.geometry.location.lat();
           this.longitude = place.geometry.location.lng();
+          if(this.selectedpoint){
+            this.selectedpoint.latitude = place.geometry.location.lat();
+            this.selectedpoint.longitude = place.geometry.location.lng();
+            this.selectedpoint.address = place.formatted_address;
+          }
         });
     });
 
-  }
-
-  // getDistanceAndDuration() {
-  //   this.estimatedTime = this.vc.estimatedTime;
-  //   this.estimatedDistance = this.vc.estimatedDistance;
-  // }
-
-  private setPickUpLocation(place : any) {
-    if (place.geometry === undefined || place.geometry === null) {
-      return;
-    }
-    this.latitude = place.geometry.location.lat();
-    this.longitude = place.geometry.location.lng();
-    this.zoom = 12;
   }
 
   private setCurrentPosition() {
@@ -95,36 +183,15 @@ export class MapsNearRoomsComponent implements OnInit {
     }
   }
 
-  private loadListPost(){
-    this.Posts = [];
-    let post = new posts();
-    post.id = 1;
-    post.title = "chung cư 12 tầng";
-    post.latitude = 10.821581049913508;
-    post.longitude = 106.78939990781248;
-    post.price = 1000;
-    this.Posts.push(post);
-  }
-
-  ViewDetails(id : number) {
-    let link = ['/details/' + id];
-    this.router.navigate(link);
-  }
-
-  mylocation() {
-    this.setCurrentPosition();
-    this.loadmap();
-    
-  }
-
-  loadDirect(lag:number,log:number){
+  
+  loadDirect(destination:geocode){
     this.vc.origin = {
-      longitude: this.longitude,
-      latitude: this.latitude
+      latitude: this.selectedpoint.latitude,
+      longitude: this.selectedpoint.longitude
     };
     this.vc.destination = {
-      longitude: log,
-      latitude: lag
+      latitude: destination.latitude,
+      longitude: destination.longitude
     }
 
     if (this.vc.directionsDisplay === undefined) {
@@ -133,6 +200,20 @@ export class MapsNearRoomsComponent implements OnInit {
         });
     }
     this.vc.updateDirections();
-    // this.getDistanceAndDuration() ;
+  }
+
+  closeSelect(){
+    this.selectedpoint = null;
+  }
+
+  getAddress() {
+    this.geoCoder = new google.maps.Geocoder;
+    this.geoCoder.geocode({ 'location': { lat: this.selectedpoint.latitude, lng: this.selectedpoint.longitude } }, (results, status) => {
+      if (status === 'OK') {
+        if (results[0]) {
+          this.selectedpoint.address = results[0].formatted_address;
+        } 
+      } 
+    });
   }
 }

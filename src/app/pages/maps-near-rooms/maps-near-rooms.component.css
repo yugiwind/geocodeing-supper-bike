@@ -1,7 +1,48 @@
-agm-map {
-    height: 700px;
-  }
-  
-  .sebm-google-map-container {
-    height: 700px;
-  }
+.sebm-google-map-container {
+  height: 500px;
+}
+
+.backgroud-read {
+  background-color: #dff0d8;
+  color: black;
+}
+
+.backgroud-blue {
+  background-color: #fcf8e3;
+  color: black;
+}
+
+.backgroud-white {
+  background-color: #f2dede;
+  color: black;
+}
+
+.backgroud-hover:hover {
+  background-color: #d9edf7;
+}
+
+.active{
+  display: none;
+}
+
+.scrollable{
+  overflow: scroll;
+  height: 540px;
+}
+
+.vip{
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  z-index: 1;
+}
+
+.selectedClass{
+  position: absolute;
+  background-color: white;
+  right: 0px;
+  top: 100px;
+  /* height: 100px; */
+  width: 30%;
+  z-index: 1;
+}

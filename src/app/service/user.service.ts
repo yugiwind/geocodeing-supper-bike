@@ -3,7 +3,7 @@ import { Authentication } from '../../app/config/authentication';
 import { user_types } from "../models/user_types";
 import { users } from "../models/users";
 import { Http } from "@angular/http";
-import { HttpMethods } from '../config/http-method-custom'
+import { HttpMethods } from '../config/dataProvide'
 
 @Injectable()
 export class userService {
