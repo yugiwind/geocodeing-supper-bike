@@ -16,4 +16,8 @@ export class pointService {
   getList(): any{
     return this.dataProvide.get('points');
   }
+
+  getCardsByPoint(p:point):any{
+    return this.dataProvide.get('cards');
+  }
 }

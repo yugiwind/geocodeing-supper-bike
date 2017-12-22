@@ -1,0 +1,33 @@
+{
+	"points":[
+	{"id":3,"address":"lê văn việt","status":0},
+	{"id":4,"address":"le van viet","status":0,"vip":1},
+	{"id":5,"address":"lee văn việt","status":0},
+	{"id":6,"address":"aaa","status":0},
+	{"id":7,"address":"asấdasdaa","status":0,"vip":1},
+	{"id":8,"address":"aasadasda","status":0},
+	{"id":9,"address":"aaádsadsada","status":0},
+	{"id":1,"title":"nguyễn văn anh","address":"212 lã xuân oai","latitude":10.821581049913508,"longitude":106.78939990781248,"status":1,"vip":1},
+	{"id":2,"title":"trần văn lâm","address":"quận 9, tp.hồ chí minh","latitude":10.821581049913508,"longitude":106.78939990781248,"status":2}
+	],
+	"users":[{
+    "id": "4",
+    "username": "admin",
+	"password": "admin",
+    "user_type": 1,
+    "last_name": null,
+    "first_name": "admin",
+    "phone": null,
+    "email": null,
+    "avatar": null,
+    "active": true,
+    "token": ""
+	}],
+	"cards":[
+		{"id":1,"latitude":10.851581049913508,"longitude":106.78939990781248},
+		{"id":2,"latitude":10.781581049913508,"longitude":106.78939990781248},
+		{"id":2,"latitude":10.781581049913508,"longitude":106.88939990781248},
+		{"id":2,"latitude":10.791581049913508,"longitude":106.79939990781248},
+		{"id":2,"latitude":10.781581049913508,"longitude":106.70939990781248}
+	]
+}

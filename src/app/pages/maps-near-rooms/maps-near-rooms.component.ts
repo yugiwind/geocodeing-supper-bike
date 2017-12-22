@@ -32,7 +32,8 @@ export class MapsNearRoomsComponent implements OnInit {
   public zoom : number;
   private points : point[];
   private selectedpoint : point;
-  private cards : any;
+  private cars : any;
+  private selectedCar :any;
   private interval: any;
   private geoCoder;
 
@@ -84,29 +85,38 @@ export class MapsNearRoomsComponent implements OnInit {
 
   selectpoint(point:point){
     this.selectedpoint = point;
-    this.cards = [];
+    this.cars = [];
     if(this.selectedpoint.status == 0){
       var geocoder = new google.maps.Geocoder();
       geocoder.geocode({ address: this.selectedpoint.address }, (results, status) => {
-        var Geocode  = new geocode();
-        this.latitude = this.selectedpoint.latitude =  results[0].geometry.location.lat();
-        this.longitude = this.selectedpoint.longitude = results[0].geometry.location.lng();
-        this.addToast("success","Tự động xác định toạn độ thành công","("+this.latitude+"+"+this.longitude);
+        if(status == "OK"){
+          var Geocode  = new geocode();
+          this.latitude = this.selectedpoint.latitude =  results[0].geometry.location.lat();
+          this.longitude = this.selectedpoint.longitude = results[0].geometry.location.lng();
+          this.selectedpoint.status = 1;
+          this.addToast("success","Tự động xác định toạn độ thành công","("+this.latitude+"+"+this.longitude);
+        }else{
+          console.log("fuck");
+          this.addToast("warning","Tự động xác định toạn độ không thành công, vùi lòng tìm bằng tay","("+this.latitude+"+"+this.longitude);
+        }
       });
       this.vc.clearDirections();
     }else if(this.selectedpoint.status == 1){
       this.latitude = this.selectedpoint.latitude;
       this.longitude = this.selectedpoint.longitude;
+      this.pointService.getCardsByPoint(this.selectedpoint).subscribe(cards=>{ 
+        this.cars = cards;
+      });
       this.vc.clearDirections();
     }else if(this.selectedpoint.status == 2){
-      let card = new geocode();
-      card.latitude = 10.921581049913508;
-      card.longitude = 106.78939990781248;
+      let car = new geocode();
+      car.latitude = 10.921581049913508;
+      car.longitude = 106.78939990781248;
       this.interval = setInterval(() => {
-        card.latitude = card.latitude - 0.001;
+        car.latitude = car.latitude - 0.001;
       }, 1000);
-      this.cards.push(card);
-      this.loadDirect(card);
+      this.cars.push(car);
+      this.loadDirect(car);
     }
   }
 
@@ -151,6 +161,12 @@ export class MapsNearRoomsComponent implements OnInit {
     this.latitude = this.selectedpoint.latitude = $event.coords.lat;
     this.longitude = this.selectedpoint.longitude = $event.coords.lng;
     this.getAddress();
+    if(this.selectedpoint.status == 2){
+      this.interval = setInterval(() => {
+        this.cars[0].latitude = this.cars[0].latitude - 0.001;
+      }, 1000);
+      this.loadDirect(this.cars[0]);
+    }
     // this.addToast("success","Cập nhật toạn độ thành công","("+this.latitude+"+"+this.longitude);
   }
 

@@ -1,6 +1,6 @@
 <ng2-toasty [position]="'top-right'"></ng2-toasty>
 <div *ngIf="selectedpoint" class="selectedClass nav">
-  <div class="modal-content" [ngClass]="{'backgroud-white': selectedpoint.status==0,'backgroud-read': selectedpoint.status==1,'backgroud-blue':selectedpoint.status==2}">
+  <div class="modal-content" [ngClass]="{'backgroud-white': selectedpoint.status==0,'backgroud-danger': selectedpoint.status==1,'backgroud-success':selectedpoint.status==2}">
     <div class="modal-header">
       <h4 class="modal-title text-center">Selected Item</h4>
     </div>
@@ -37,8 +37,8 @@
   <div class="col-md-2 no-padding ">
     <table>
       <tr>
-        <th class="backgroud-read text-center">Đã có xe nhận</th>
-        <th class="backgroud-blue text-center">Chưa có xe nhận</th>
+        <th class="backgroud-success text-center">Đã có xe nhận</th>
+        <th class="backgroud-danger text-center">Chưa có xe nhận</th>
         <th class="backgroud-white text-center">Chưa xác định toạ độ</th>
       </tr>
     </table>
@@ -46,7 +46,7 @@
       <div class="table-bordered">
       </div>
       <div *ngFor="let point of points" (click)="selectpoint(point)">
-        <a class="list-group-item list-group-item-action flex-column align-items-start backgroud-hover hover-point" [ngClass]="{'backgroud-white': point.status==0,'backgroud-read': point.status==1,'backgroud-blue':point.status==2,'active': selectedpoint && selectedpoint.id == point.id}">
+        <a class="list-group-item list-group-item-action flex-column align-items-start backgroud-hover hover-point" [ngClass]="{'backgroud-white': point.status==0,'backgroud-danger': point.status==1,'backgroud-success':point.status==2,'active': selectedpoint && selectedpoint.id == point.id}">
           <div *ngIf="point.vip==1" class="vip">
             <img src="../../../assets/icon/vip.png">
           </div>
@@ -61,7 +61,7 @@
   </div>
   <div class="col-md-10 no-padding container">
     <div [hidden]="submitted">
-      <form (ngSubmit)="onSubmit()" #locForm="ngForm">
+      <form #locForm="ngForm">
         <div class="input-group">
           <span class="input-group-addon">
             <i class="fa fa-map-marker" aria-hidden="true"></i>
@@ -78,7 +78,7 @@
         <sebm-google-map-marker [latitude]="selectedpoint.latitude" [longitude]="selectedpoint.longitude" [markerDraggable]="true"
           [iconUrl]="'../../../assets/icon/speech.png'" (dragEnd)="markerDragEnd($event)"></sebm-google-map-marker>
       </div>
-      <sebm-google-map-marker *ngFor="let p of cards" [latitude]="p.latitude" [longitude]="p.longitude" [markerDraggable]="true"
+      <sebm-google-map-marker *ngFor="let p of cars" [latitude]="p.latitude" [longitude]="p.longitude" [markerDraggable]="true"
         [iconUrl]="'../../../assets/icon/taxi.png'" (markerClick)="loadDirect(p.latitude,p.longitude)">
       </sebm-google-map-marker>
       <sebm-google-map-directions [origin]="origin" [destination]="destination"></sebm-google-map-directions>

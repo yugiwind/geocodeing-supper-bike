@@ -2,12 +2,12 @@
   height: 500px;
 }
 
-.backgroud-read {
+.backgroud-success {
   background-color: #dff0d8;
   color: black;
 }
 
-.backgroud-blue {
+.backgroud-danger {
   background-color: #fcf8e3;
   color: black;
 }
@@ -27,7 +27,7 @@
 
 .scrollable{
   overflow: scroll;
-  height: 540px;
+  height: 500px;
 }
 
 .vip{
