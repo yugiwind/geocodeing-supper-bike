@@ -13,8 +13,8 @@ import * as menu from "../../app/config/menu-config";
 })
 export class MenuBarComponent implements OnInit {
   private appcom: any;
-  private access_name: any;
-  private menu: menu_option[];
+  public access_name: any;
+  public menu: menu_option[];
 
   constructor(
     public route: ActivatedRoute,

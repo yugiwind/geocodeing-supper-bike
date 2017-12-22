@@ -30,9 +30,9 @@ export class MapsNearRoomsComponent implements OnInit {
   public destinationInput : FormControl;
   public destinationOutput : FormControl;
   public zoom : number;
-  private points : point[];
-  private selectedpoint : point;
-  private cars : any;
+  public points : point[];
+  public selectedpoint : point;
+  public cars : any;
   private selectedCar :any;
   private interval: any;
   private geoCoder;

@@ -60,7 +60,7 @@
     </div>
   </div>
   <div class="col-md-10 no-padding container">
-    <div [hidden]="submitted">
+    <div>
       <form #locForm="ngForm">
         <div class="input-group">
           <span class="input-group-addon">
@@ -81,7 +81,7 @@
       <sebm-google-map-marker *ngFor="let p of cars" [latitude]="p.latitude" [longitude]="p.longitude" [markerDraggable]="true"
         [iconUrl]="'../../../assets/icon/taxi.png'" (markerClick)="loadDirect(p.latitude,p.longitude)">
       </sebm-google-map-marker>
-      <sebm-google-map-directions [origin]="origin" [destination]="destination"></sebm-google-map-directions>
+      <sebm-google-map-directions></sebm-google-map-directions>
     </sebm-google-map>
   </div>
 </div>
