@@ -1,0 +1,87 @@
+<ng2-toasty [position]="'top-right'"></ng2-toasty>
+<div *ngIf="selectedpoint" class="selectedClass nav">
+  <div class="modal-content" [ngClass]="{'backgroud-white': selectedpoint.status==0,'backgroud-danger': selectedpoint.status==1,'backgroud-success':selectedpoint.status==2}">
+    <div class="modal-header">
+      <h4 class="modal-title text-center">Selected Item</h4>
+    </div>
+    <div>
+      <div *ngIf="selectedpoint.vip==1" class="vip">
+        <img src="../../../assets/icon/vip.png">
+      </div>
+      <table class="table">
+        <tr *ngIf="selectedpoint.title">
+          <th>Name:</th>
+          <th>{{selectedpoint.title}}</th>
+        </tr>
+        <tr>
+          <th>Address:</th>
+          <th>{{selectedpoint.address}}</th>
+        </tr>
+        <tr>
+          <th>Location:</th>
+          <th>({{selectedpoint.latitude}}:{{selectedpoint.longitude}})</th>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <button type="button" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-secondary" (click)="closeSelect()">Close</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+<div class="main">
+  <div class="col-md-2 no-padding ">
+    <table>
+      <tr>
+        <th class="backgroud-success text-center">Đã có xe nhận</th>
+        <th class="backgroud-danger text-center">Chưa có xe nhận</th>
+        <th class="backgroud-white text-center">Chưa xác định toạ độ</th>
+      </tr>
+    </table>
+    <div class=" scrollable">
+      <div class="table-bordered">
+      </div>
+      <div *ngFor="let point of points" (click)="selectpoint(point)">
+        <a class="list-group-item list-group-item-action flex-column align-items-start backgroud-hover hover-point" [ngClass]="{'backgroud-white': point.status==0,'backgroud-danger': point.status==1,'backgroud-success':point.status==2,'active': selectedpoint && selectedpoint.id == point.id}">
+          <div *ngIf="point.vip==1" class="vip">
+            <img src="../../../assets/icon/vip.png">
+          </div>
+          <div class="d-flex w-100 justify-content-between">
+            <h4 class="mb-1">{{point.address}}</h4>
+            <small>3 minutes ago</small>
+          </div>
+          <p class="mb-1">{{point.title}}</p>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-10 no-padding">
+    <div>
+      <form #locForm="ngForm">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="fa fa-map-marker" aria-hidden="true"></i>
+          </span>
+          <div class="form-group">
+            <input placeholder="Enter destination" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control col"
+              #pickupOutput [formControl]="destinationOutput">
+          </div>
+        </div>
+      </form>
+    </div>
+    <sebm-google-map [latitude]="latitude" [longitude]="longitude" [scrollwheel]="false" [zoom]="zoom">
+      <div *ngIf="selectedpoint">
+        <sebm-google-map-marker [latitude]="selectedpoint.latitude" [longitude]="selectedpoint.longitude" [markerDraggable]="true"
+          [iconUrl]="'../../../assets/icon/speech.png'" (dragEnd)="markerDragEnd($event)"></sebm-google-map-marker>
+      </div>
+      <sebm-google-map-marker *ngFor="let p of cars" [latitude]="p.latitude" [longitude]="p.longitude" [markerDraggable]="true"
+        [iconUrl]="'../../../assets/icon/taxi.png'" (markerClick)="loadDirect(p.latitude,p.longitude)">
+      </sebm-google-map-marker>
+      <sebm-google-map-directions></sebm-google-map-directions>
+    </sebm-google-map>
+  </div>
+</div>
